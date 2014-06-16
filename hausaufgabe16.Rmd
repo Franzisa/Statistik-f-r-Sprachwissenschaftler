@@ -97,7 +97,7 @@ Error in model.frame.default(formula = price ~ length, data = diamonds,  :
   ungültiger Typ (builtin) für die Variable 'length'
 > summary(lm(price~width,data=diamonds))
 Error in eval(expr, envir, enclos) : object 'width' not found
->
+
 
 Es funktioniert wenn man die Variablen x und y einsetzt, ich verstehe nicht warum, da bei depth keine Fehlermeldung kommt, die Korrelation aber viel schlechter ausfällt.
 mit length:
