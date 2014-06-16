@@ -45,6 +45,12 @@ Mögliche Ausgangsfragen sind unter anderem:
 * Gibt es einen Zusammenhang zwischen Farbe und Klarheit? Zwischen Farbe und Carat? Zwischen Farbe und Tiefe?
 * ...
 
+Wie ist der Zusammenhang zwischen Gewicht und Preis?
+```{r}
+ggplot(diamonds.metric,aes(x=weight.kg,y=price.$)) +  geom_point() + geom_smooth(method="lm")
+m4 <- lm(price.$ ~ weight.kg, data=diamonds.metric)
+print(summary(m4))
+```
 *Vergessen Sie dabei nicht, dass wir bisher nur Methoden gelernt haben, wo die abhängige Variable zumindest intervallskaliert ist!*
 
 Sie können sich auch [das *ggplot* Buch](http://dx.doi.org/10.1007/978-0-387-98141-3) zur Inspiration anschauen, v.a. Abbildungen 4.7, 4.8, 4.9, 5.2, 5.3, 5.4, 5.6, 5.14, 7.16, 9.1  und Kapitel 2.2-2.5 könnten inspirierend wirken. Den Code zur Erstellung der Figuren findet man immer im Haupttext.
