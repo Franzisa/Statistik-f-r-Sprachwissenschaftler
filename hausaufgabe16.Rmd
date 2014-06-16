@@ -45,12 +45,75 @@ Mögliche Ausgangsfragen sind unter anderem:
 * Gibt es einen Zusammenhang zwischen Farbe und Klarheit? Zwischen Farbe und Carat? Zwischen Farbe und Tiefe?
 * ...
 
-Wie ist der Zusammenhang zwischen Gewicht und Preis?
+Fragestellung:
+Welche der drei Faktoren sagt den Preis am besten voraus: Carat, KLarheit oder Farbe?
+zuerst werde ich die einzelnen Zusammenhänge berechnen und dann vergleichen.
+
+Wie ist der Zusammenhang zwischen Carat und Preis?
+soll ermittelt werden aus der Korrelation der beiden Variablen. Hierbei soll Carat die unabhängige Variable sein und der Preis die abhängige.
+
+  
 ```{r}
-ggplot(diamonds.metric,aes(x=weight.kg,y=price.$)) +  geom_point() + geom_smooth(method="lm")
-m4 <- lm(price.$ ~ weight.kg, data=diamonds.metric)
-print(summary(m4))
+summary(lm(price~carat,data=diamonds))
 ```
+
+die Korrelation ist mit 0,849 sehr hoch, Carat ist also ein guter Prädiktor für den Preis
+
+als plot:
+```{r}
+ggplot(diamonds, aes(x=carat, y=price))+geom_point()
+```
+die Graphik sieht nicht linear aus sondern eher exponentiell
+```{r}
+ggplot(diamonds, aes(x=carat, y=price))+geom_line()
+```
+
+Wie ist der Zusammenhang zwischen Klarheit und Preis?
+```{r}
+summary(lm(price~clarity,data=diamonds))
+```
+Die Korrelation ist mit 0,o27 sehr niedrig. Klarheit ist also kaum ein Prädiktor für den Preis.
+
+Wie ist der Zusammenhang zwischen Frabe und Preis?
+```{r}
+summary(lm(price~colour,data=diamonds))
+```
+Leider funktioniert das nicht, ich denke weil Farben nicht intervallskaliert sind.
+
+Ich versuche es mit Tiefe: Wie ist der Zusammenhang zwische Tiefe und Preis?
+```{r}
+summary(lm(price~depth,data=diamonds))
+```
+Es gibt praktisch keinen.
+Wenn man aber für depth z einsetzt, gibt es auf einmal eine Korrelation von 0,74
+```{r}
+summary(lm(price~z,data=diamonds))
+```
+
+Mit length und width funktioniert es gar nicht. Ich verstehe nicht warum
+==> Fehlermeldung:
+> summary(lm(price~length,data=diamonds))
+Error in model.frame.default(formula = price ~ length, data = diamonds,  : 
+  ungültiger Typ (builtin) für die Variable 'length'
+> summary(lm(price~width,data=diamonds))
+Error in eval(expr, envir, enclos) : object 'width' not found
+>
+
+Es funktioniert wenn man die Variablen x und y einsetzt, ich verstehe nicht warum, da bei depth keine Fehlermeldung kommt, die Korrelation aber viel schlechter ausfällt.
+mit length:
+```{r}
+summary(lm(price~x,data=diamonds))
+```
+Korrelation: 0,78
+
+mit width:
+```{r}
+summary(lm(price~y,data=diamonds))
+```
+Korrelation: 0,749
+
+INsgesamt ist carat der beste Prädiktor für den Preis, aber auch Länge Breite und Tiefe zeigen sich als gute Prädiktoren. Es könnte noch interessant sein, wie die drei letzt genannten mit carat zusammenhängen.
+
 *Vergessen Sie dabei nicht, dass wir bisher nur Methoden gelernt haben, wo die abhängige Variable zumindest intervallskaliert ist!*
 
 Sie können sich auch [das *ggplot* Buch](http://dx.doi.org/10.1007/978-0-387-98141-3) zur Inspiration anschauen, v.a. Abbildungen 4.7, 4.8, 4.9, 5.2, 5.3, 5.4, 5.6, 5.14, 7.16, 9.1  und Kapitel 2.2-2.5 könnten inspirierend wirken. Den Code zur Erstellung der Figuren findet man immer im Haupttext.
