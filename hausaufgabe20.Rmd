@@ -29,7 +29,8 @@ Ich schlage weiterhin vor, dass Sie die R-Code-Blöcke erst in der Konsole teste
 Im folgenden steht RE für engl. *random effect* und FE für engl. *fixed effect*.
 
 # Höflichkeit und Stimmhöhe
-`r citet("10.1016/j.wocn.2012.08.006")` untersuchten die phonetischen Eigenschaften der formellen und informellen Register im Koreanischen. Unter anderem wurde auch die Grundfrequenz ($F_0$) der Stimme bei jedem Trial festgestellt. Die Daten zur Grundfrequenz bei sechs Probanden und sieben Items hat Bodo Winter im Netz verfügbar gemacht. 
+`r citet("10.1016/j.wocn.2012.08.006")` 
+untersuchten die phonetischen Eigenschaften der formellen und informellen Register im Koreanischen. Unter anderem wurde auch die Grundfrequenz ($F_0$) der Stimme bei jedem Trial festgestellt. Die Daten zur Grundfrequenz bei sechs Probanden und sieben Items hat Bodo Winter im Netz verfügbar gemacht. 
 
 Wir können Daten direkt von seiner Webseite in R laden: 
 
@@ -47,7 +48,11 @@ Die Items in dieser Studie sind "Szenarien", also Situationen wo man mehr oder w
 
 Allerdings merken wir, dass `scenario` falsch kodiert ist, was wir korrigieren müssen:
 
-CODE_BLOCK_HIER
+
+```{r}
+stimmen$scenario <- as.factor(stimmen$scenario)
+summary(stimmen)
+```
 
 ## Auswirkung der experimentellen Manipulation
 Um einen groben Eindruck zu bekommen, können wir schnell einen Boxplot machen:
@@ -72,17 +77,26 @@ Wir merken dabei, dass:
 
 Wir können auf ähnliche Art und Weise ein Plot für die Versuchspersonen und Szenarien erstellen.
 
-Erstellen Sie einen Boxplot für `frequency` nach `subject`, wie oben für `frequency` nach `attitude` gemacht wurde (hier ohne Aufteilung nach Geschlecht). Dieser gibt uns einen Blick in die Varianz innerhalb und zwischen Versuchspersonen. 
+Erstellen Sie einen Boxplot für `frequency` nach `subject`, wie oben für `frequency` nach `attitude` gemacht wurde (hier ohne Aufteilung nach Geschlecht). Dieser gibt uns einen Blick in die Varianz innerhalb und zwischen Versuchspersonen.
 
-CODE_BLOCK_HIER
+```{r, fig.width=7, fig.height=4, fig.align='center'}
+ggplot(stimmen) +
+  geom_boxplot(aes(x=subject,y=frequency))
+```
+
 
 Machen Sie das gleiche für `scenario`. 
 
-CODE_BLOCK_HIER
+```{r, fig.width=7, fig.height=4, fig.align='center'}
+ggplot(stimmen) +
+  geom_boxplot(aes(x=scenario,y=frequency))
+```
+
 
 Gibt es mehr Varianz zwischen Szenarien oder zwischen Versuchspersonen? 
+Es gibt mehr Varianz zwischen den Versuchspersonen. Dafür gibt es innerhalb der Scenarien mehr Varianz als innerhalb der Versuchspersonen.
 
-Die Varianz zwischen Versuchspersonen bzw. Szenarien beschreiben wir durch zufällige Effekte. Es gibt offentsichlich einen Unterschied zwischen den verschiedenen Basisfrequenzen der Einzelversuchenpersonen und es scheint auch zwischen den verschiedenen Szenarien einen Unterschied zu geben, d.h. wir haben auf jeden Fall Intercepts in unserer RE-Struktur. Ob wir auch weitere Struktur in der RE-Struktur aufnehmen, schauen wir uns erst später an.
+Die Varianz zwischen Versuchspersonen bzw. Szenarien beschreiben wir durch zufällige Effekte. Es gibt offentsichlich einen Unterschied zwischen den verschiedenen Basisfrequenzen der Einzelversuchenpersonen und es scheint auch zwischen den verschiedenen Szenarien einen Unterschied zu geben, d.h. wir haben auf jeden Fall Intercepts (-> wieso?) in unserer RE-Struktur. Ob wir auch weitere Struktur in der RE-Struktur aufnehmen, schauen wir uns erst später an.
 
 # Fixe Effekte
 
@@ -91,12 +105,13 @@ Wie oben erwähnt, haben wir drei mögliche Effekte, die wir uns anschauen wolle
 2. Haupteffekt für `attitude`
 3. Interaktion für `gender` $\times$ `attitude` 
 
-Um die Berechnung im folgenden zu beschleunigen, bleiben wir momentan bei einer Intercepts-Only-RE-Struktur. Weil der Effekt von Geschlecht schon aus der Literatur und dem Alltag bekannt ist, nehmen wir das Model nur mit `gender` als Ausgangspunkt. Wir haben auch vor, Modellvergleiche zu machen, daher setzten wir `REML=FALSE` von Anfang an.
+Um die Berechnung im folgenden zu beschleunigen, bleiben wir momentan bei einer Intercepts-Only-RE-Struktur. Weil der Effekt von Geschlecht schon aus der Literatur und dem Alltag bekannt ist, nehmen wir das Model nur mit `gender` als Ausgangspunkt. Wir haben auch vor, Modellvergleiche zu machen, daher setzten wir `REML=FALSE` (was bedeutet das? Mit der Erklärung die R ausspuckt kann ich nichts anfangen) von Anfang an.
 
 ```{r}
 model.gender <- lmer(frequency ~ gender + (1|subject) + (1|scenario), data=stimmen, REML=FALSE)
 summary(model.gender)
 ```
+
 
 Wie bei normaler Regression werden auch hier kategorische Variablen als Stufen angegeben. Hier gibt es für `genderM` (also für Männer) eine Auswirkung von etwa $-108$ Hz, d.h. die Stimme von Männern sind etwa $108$ Hz tiefer als die von Frauen.
 
@@ -106,12 +121,17 @@ model.attitude <- lmer(frequency ~ gender + attitude + (1|subject) + (1|scenario
 summary(model.attitude)
 ```
 
+
 Haben sich die Koeffizienten oder Standardfehler geändert?
+Der Standard fehler ist jetzt Intercept:13.8; genderM:17.6; und attituepol:5.5, vorher war er beim Intercept ganz wenig geringer und bei genderM ganz wenig größer. Die Unterschiede sind aber zu vernachlässigen. Neu hier ist attitudepol mit Standardfehler 5.55
 
 Jetzt berechen wir das Modell mit der Interaktion zwischen `gender` und `attitude`. 
 
 ```{r}
-#model.attitude.int <- CODE_HIER
+#model.attitude.int <- CODE HIER:
+model.attitude <- lmer(frequency ~ gender + attitude + (1|subject) + (1|scenario), data=stimmen, REML=FALSE)
+summary(model.attitude.int)
+```
 #summary(model.attitude.int)
 ```
 
