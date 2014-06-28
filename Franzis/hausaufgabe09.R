@@ -73,13 +73,15 @@ var.test(rt$RT~rt$subj)
 
 
 # Sind die Varianzen homogen? Vergessen Sie nicht, dass die Nullhypothese beim
-# F-Test "Varianzen Gleich" ist. nein
+# F-Test "Varianzen Gleich" ist. 
+nein
 
 # Berechenen Sie den Levene Test:
 leveneTest(rt$RT~rt$subj)
 
 # Sind die Varianzen homogen? Vergessen Sie nicht, dass die Nullhypothese beim
-# Levene Test "Varianzen Gleich" ist. ja
+# Levene Test "Varianzen Gleich" ist. 
+ja
 
 # Für heterogene Varianzen haben wir eine Variante des  t-Tests gesehen, die
 # eine Korrektur der Freiheitsgerade macht. Bei homogener Varianz sollten beide
@@ -146,8 +148,7 @@ print("Der F-Test ist insignifikant, die Varianzen der Gruppen sind ungleich.")}
 # Nach jedem Test sollten Sie auch programmatisch (=durch if-Blöcke)
 # ausdrücken, ob die Varianzen homogen sind.
 
-logRT_Gruppen <- rt[rt$subj == "1" | rt$subj == "2", c("subj","logRT")]
-print(logRT_Gruppen)
+
 
 
 
@@ -156,10 +157,32 @@ print(logRT_Gruppen)
 # ausdrücken, ob die Daten normal verteilt sind. 
 # (Für die fortgeschrittenen: hier könnte man auch eine for-Schleife nutzen...)
 
-# CODE_HIER
+gruppe1_logrt <- rt[rt$subj == "1","logRT"]
+gruppe2_logrt <- rt[rt$subj == "2","logRT"]
+log_F <- var.test(gruppe1_logrt,gruppe2_logrt)
+print(log_F)
+if (log_F$p.value > 0.05){
+print("Der F-Test ist insignifikant, die Varianzen der Gruppen sind ungleich.")
+  }else{
+print("Der F-Test ist signifikant, die Varianzen der Gruppen sind gleich.")}
+
+logRT_Gruppen <- rt[rt$subj == "1" | rt$subj == "2", c("subj","logRT")]
+print(logRT_Gruppen)
+
+log_levene <- leveneTest(logRT_Gruppen$logRT ~ logRT_Gruppen$subj)
+print(log_levene)
+
+
+
+
+  
+  
 
 # Hat die logarithmische Transformation insgesamt geholfen? Berechnen Sie zum
 # Schluss den (Welch) t-Test für die logarithmischen Daten. Bekommen Sie das
 # gleiche Ergebnisse wie bei den Ausgangsdaten?
 
-# CODE_HIER
+welch <- t.test(group1_logrt,group2_logrt)
+print(welch)
+  
+  
